@@ -44,7 +44,7 @@
         "short_name": "New Task",
         "description": "Quickly add a new task",
         "url": "/new-task",
-        "icons": [{ "src": "/img/icons/icon-192x192.png", "sizes": "192x192" }]
+        "icons": [{ "src": "css/img/img/icons/icon-192x192.png", "sizes": "192x192" }]
       },
       {
         "name": "View Completed Tasks",
