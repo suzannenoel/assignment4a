@@ -35,7 +35,7 @@ async function addTask(task){
   const db = await createDB();
   let taskID;//VS wouldn't allow me to make the l in "let" smallcase, it kept capitalizing the "L"
 
-if(navigator.online) {
+if(navigator.onLine) {
   const saveTask = await addTaskToFirebase(task);
    taskId = saveTask.id;
    const tx = db.transaction("tasks","readwrite");
