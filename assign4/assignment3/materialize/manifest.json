@@ -51,7 +51,7 @@
         "short_name": "Completed",
         "description": "View all completed tasks",
         "url": "/completed",
-        "icons": [{ "src": "/css/img/img/icons/icon-192x192.png", "sizes": "192x192" }]
+        "icons": [{ "src": "css/img/img/icons/icon-192x192.png", "sizes": "192x192" }]
       }
     ]
   }
