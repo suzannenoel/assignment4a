@@ -2,7 +2,7 @@
     "name": "Task Manager",
     "short_name": "TM",
     "description": "Manage my daily tasks",
-    "start_url": "index.html",
+    "start_url": "/assignment4a/assign4/assignment3/materialize/index.html",
     "scope": "/",
     "display": "standalone",
     "orientation": "portrait-primary",
