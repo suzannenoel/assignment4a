@@ -177,7 +177,7 @@ if (taskCard) {
        const firebaseTasks = await getTasksFromFirebase();
 //start transaction (read only)
 const tx = db.transaction("tasks","readwrite");
-const store = tx.ObjectStore("tasks");
+const store = tx.objectStore("tasks");
 
 for (const task of firebaseTasks){
 await store.put({...task, synced: true})
