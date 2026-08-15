@@ -74,7 +74,7 @@ if (!id){
 }
   const db = await createDB();
   let taskID;//VS wouldn't allow me to make the l in "let" small
-  if(navigator.online) {
+  if(navigator.onLine) {
   const saveTask = await addTaskToFirebase(task);
    taskId = saveTask.id;
    const tx = db.transaction("tasks","readwrite");
