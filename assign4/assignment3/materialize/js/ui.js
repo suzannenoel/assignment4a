@@ -78,7 +78,7 @@ if (!id){
   const saveTask = await addTaskToFirebase(task);
    taskId = saveTask.id;
    const tx = db.transaction("tasks","readwrite");
-   const store = tx.ObjectStore("tasks");
+   const store = tx.objectStore("tasks");
    await store.put({ ...task, id: taskId, synced: true });   
    await tx.done;
   }else {
