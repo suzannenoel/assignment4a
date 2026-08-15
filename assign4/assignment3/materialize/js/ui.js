@@ -54,7 +54,7 @@ if(!taskToStore.id){
    
 //start transaction
 const tx = db.transaction("tasks","readwrite");
-const store = tx.ObjectStore("tasks");
+const store = tx.objectStore("tasks");
 //Add task to store
 await store.add(taskToStore);
 //complete transaction
