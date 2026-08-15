@@ -107,7 +107,7 @@ async function syncTasks(){
   await tx.done;
 
   for( const task of tasks){
-    if (!task.synced && navigator.online){
+    if (!task.synced && navigator.onLine){
       try{
         const taskToSync ={
           title: task.title,
