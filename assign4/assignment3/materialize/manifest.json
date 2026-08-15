@@ -23,7 +23,8 @@
       }
     ],
     "screenshots": [
-      "src": "/css/img/img/screenshots/Screenshot1.png", "sizes": "192x192",
+        {
+      "src": "/css/img/img/screenshots/Screenshot1.png", "sizes": "192x192"},
       {
         "sizes": "776x914",
         "type": "image/png",
