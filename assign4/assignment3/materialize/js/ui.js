@@ -352,7 +352,7 @@ async function checkStorageUsage(){
     //upddate the UI
     const storageInfo = document.querySelector("#storage-info");
     if(storageInfo){
-      storageInfo.textContent = 'Storage used: ${usageInMB} MB of ${quotaInMB} MB';
+      storageInfo.textContent = `Storage used: ${usageInMB} MB of ${quotaInMB} MB`;
        if (usage /quota > 0.8) {
         const storageWarning = document.querySelector("#storage-warning");
         if (storageWarning){
