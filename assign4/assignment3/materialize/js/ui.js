@@ -82,7 +82,7 @@ if (!id){
    await store.put({ ...task, id: taskId, synced: true });   
    await tx.done;
   }else {
-    taskId ='temp-${Date.now()}';
+    taskId =`temp-${Date.now()}`;
     console.log(taskId);
    const taskToStore = { ...task, taskId, synced: false};
   (!taskToStore.id){
