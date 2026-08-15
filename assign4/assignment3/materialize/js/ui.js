@@ -173,7 +173,7 @@ if (taskCard) {
 
     const taskContainer = document.querySelector(".tasks");
     taskContainer.innerHTML ="";//Clear current tasks
-    if (navigator.online){
+    if (navigator.onLine){
        const firebaseTasks = await getTasksFromFirebase();
 //start transaction (read only)
 const tx = db.transaction("tasks","readwrite");
