@@ -12,7 +12,7 @@
     "lang": "en-US",
     "icons": [
       {
-        "src": "/css/img/img/icons/icon-512x512.png",
+        "src": "css/img/img/icons/icon-512x512.png",
         "type": "image/png",
         "sizes": "512x512"
       },
