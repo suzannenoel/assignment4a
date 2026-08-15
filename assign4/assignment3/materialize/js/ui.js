@@ -347,7 +347,7 @@ async function checkStorageUsage(){
     const usageInMB = (usage /(1024 * 1024)). toFixed(2);
     const quotaInMB = (usage /(1024 * 1024)). toFixed(2);
 
-    console.log('Storage used: ${usageInMB} MB of ${quotaInMB} MB');
+    console.log(`Storage used: ${usageInMB} MB of ${quotaInMB} MB`);
 
     //upddate the UI
     const storageInfo = document.querySelector("#storage-info");
