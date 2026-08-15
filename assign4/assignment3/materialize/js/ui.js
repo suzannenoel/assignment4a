@@ -1,4 +1,4 @@
-import{ openDB } from "https:unpkg.com/idb?module";
+import { openDB } from "https://unpkg.com/idb?module";
 import { addTaskToFirebase } from "./firebaseDB";
 document.addEventListener("DOMContentLoaded", function () {
     // Sidenav Initialization
