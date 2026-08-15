@@ -99,7 +99,7 @@ if (!id){
 //Sync tasks from indexedDB to firebase
 async function syncTasks(){
   const db = await createDB();
-  const tx = db.transaction("task", "readonly");
+  const tx = db.transaction("tasks", "readonly");
   const store = tx.objectStore("tasks");
 
   //fetch all unsynced tasks
