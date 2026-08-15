@@ -344,8 +344,8 @@ async function checkStorageUsage(){
   if (navigator.storage && navigator.storage.estimate) {
     const {usage, quota} = await navigator.storage.estimate();
     
-    const usageInMB = (usage /(1024 * 1024)). toFixed(2);
-    const quotaInMB = (usage /(1024 * 1024)). toFixed(2);
+    const usageInMB = (usage /(1024 * 1024)).toFixed(2);
+    const quotaInMB = (quota /(1024 * 1024)).toFixed(2);
 
     console.log(`Storage used: ${usageInMB} MB of ${quotaInMB} MB`);
 
