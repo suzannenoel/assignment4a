@@ -187,7 +187,7 @@ await tx.done;
 }else {
 //start transaction (read only)
 const tx = db.transaction("tasks","readwrite");
-const store = tx.ObjectStore("tasks");
+const store = tx.objectStore("tasks");
 //get all tasks
 const tasks= await store.getAll();
 //complete transaction
