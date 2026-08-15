@@ -2,7 +2,7 @@
     "name": "Task Manager",
     "short_name": "TM",
     "description": "Manage my daily tasks",
-    "start_url": "/index.html",
+    "start_url": "index.html",
     "scope": "/",
     "display": "standalone",
     "orientation": "portrait-primary",
