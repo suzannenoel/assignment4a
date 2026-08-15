@@ -85,7 +85,7 @@ if (!id){
     taskId =`temp-${Date.now()}`;
     console.log(taskId);
    const taskToStore = { ...task, taskId, synced: false};
-  (!taskToStore.id){
+  if(!taskToStore.id){
   console.error("Failed to generate a valid ID for the task.");
   return;//Exit if ID is invalid
   const tx = db.transaction("tasks", "readwrite");
