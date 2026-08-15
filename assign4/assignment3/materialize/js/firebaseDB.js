@@ -67,7 +67,7 @@ tasks.push({id: doc.id, ...doc.data()});
   export async function updateTask(id, updateData){
     try{
      const taskRef= doc(db, "tasks",id);
-     await updateDoc(taskRef, updatedData);   
+     await updateDoc(taskRef, updateData);   
     }catch(error){
         console.error("error updating task: ",error);
        }   
