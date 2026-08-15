@@ -139,7 +139,7 @@ async function deleteTask(id){
     return;
   }
 const db = await createDB();
-if (navigator.online){
+if (navigator.onLine){
  await deleteTaskFromFirebase(id);
 console.log(id);
 //start transaction
