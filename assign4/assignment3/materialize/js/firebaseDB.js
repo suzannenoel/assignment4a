@@ -44,7 +44,7 @@ const task= {
     addTask(task);
   //get tasks
   export async function getTasks(params){
-   const tasks[];
+   const tasks = [];
    try{
 const querySnapshot = await getDocs(collection(db,"tasks"));
 querySnapshot.forEach((doc)=>{
