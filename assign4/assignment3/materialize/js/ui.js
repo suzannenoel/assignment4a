@@ -89,7 +89,7 @@ if (!id){
   console.error("Failed to generate a valid ID for the task.");
   return;//Exit if ID is invalid
   const tx = db.transaction("tasks", "readwrite");
-  const store = tx.OjectStore("tasks");
+  const store = tx.objectStore("tasks");
   await store.put(taskToStore);
   await tx.done;
   }
