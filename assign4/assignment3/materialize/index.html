@@ -185,6 +185,20 @@
         <script src="js/materialize.min.js"></script>
         <script type="module" src="js/ui.js"></script>
         <script type="module" src="js/firebaseDB.js"></script>
+    <script>
+        if('serviceWorker' in navigator){
+            navigator.serviceWorker.register('sw.js')
+            .then(()=>console.log('Service Worker registered'))
+            .catch((err)=>console.log('Service Worker error:', err));
+        }
+            </script>
+    </script>
+
+
+
+
+
+    
       </body>
     </html>
 
