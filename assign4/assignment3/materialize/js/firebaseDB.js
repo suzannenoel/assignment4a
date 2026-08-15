@@ -35,13 +35,7 @@
     } 
     }
 
-const task= {
-    title: "example task",
-    description: "This is a test",
-    status: true,
 
-};
-    addTask(task);
   //get tasks
   export async function getTasks(params){
    const tasks = [];
