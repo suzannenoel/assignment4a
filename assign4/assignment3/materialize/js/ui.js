@@ -1,5 +1,5 @@
 import { openDB } from "https://unpkg.com/idb?module";
-import { addTaskToFirebase } from "./firebaseDB";
+import { addTask } from "./firebaseDB.js";
 document.addEventListener("DOMContentLoaded", function () {
     // Sidenav Initialization
     const menus = document.querySelector(".sidenav");
