@@ -144,7 +144,7 @@ if (navigator.onLine){
 console.log(id);
 //start transaction
 const tx = db.transaction("tasks","readwrite");
-const store = tx.ObjectStore("tasks");
+const store = tx.objectStore("tasks");
 
 try{
  //delete task by id
