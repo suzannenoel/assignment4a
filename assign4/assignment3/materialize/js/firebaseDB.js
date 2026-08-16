@@ -23,6 +23,10 @@
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
   const db = getFirestore(app);
+// Enable offline support via IndexedDB
+enableIndexedDbPersistence(db).catch((err) => {
+  console.warn('IndexedDB persistence failed:', err.code);
+});
 
   //Add a task
   export async function addTask(task){
