@@ -1,0 +1,21 @@
+/* Keep the brand clear of navigation links on smaller screens */
+@media only screen and (max-width: 992px) {
+  header nav .brand-logo {
+    left: 0.75rem;
+    transform: none;
+    white-space: nowrap;
+  }
+}
+
+/* Slightly reduce the brand size on phones */
+@media only screen and (max-width: 600px) {
+  header nav .brand-logo {
+    font-size: 1.6rem;
+  }
+}
+
+/* Improve contrast for the mobile menu icon */
+header nav .sidenav-trigger,
+header nav .sidenav-trigger i {
+  color: #333;
+}
