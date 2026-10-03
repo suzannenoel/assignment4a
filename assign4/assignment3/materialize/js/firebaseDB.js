@@ -28,10 +28,7 @@ enableIndexedDbPersistence(db).catch((err) => {
   console.warn('IndexedDB persistence failed:', err.code);
 });
 
-// Enable offline support via IndexedDB
-enableIndexedDbPersistence(db).catch((err) => {
-  console.warn('IndexedDB persistence failed:', err.code);
-});
+
 
   //Add a task
   export async function addTask(task){
