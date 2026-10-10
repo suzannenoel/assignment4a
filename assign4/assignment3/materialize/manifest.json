@@ -1,6 +1,7 @@
 {
     "name": "Task Manager",
     "short_name": "TM",
+    "id": "/assignment4a/assign4/assignment3/materialize/",
     "description": "Manage my daily tasks",
     "start_url": "/assignment4a/assign4/assignment3/materialize/index.html",
     "scope": "/assignment4a/assign4/assignment3/materialize/",
