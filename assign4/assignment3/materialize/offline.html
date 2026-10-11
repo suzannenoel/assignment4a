@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#FFE1C4">
+  <title>Task Manager - Offline</title>
+  <style>
+    * {
+        box-sizing: border-box;
+    }
+    body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 1rem;
+        background: #f5f5f5;
+        color: #333;
+        font: 16px/1.6 Arial, Helvetica, sans-serif;
+    }
+    main {
+        width: min(100%, 36rem);
+        padding: 2rem;
+        border-radius: 1rem;
+        background: #fff;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        margin-top: 0;
+        color: #e57c00;
+        }
+    a {
+        display: inline-block;
+        margin-block: 1rem;
+        padding: 0.75rem 1rem;
+        border-radius: 0.35rem;
+        background: #e57c00;
+        color: #fff;
+        text-decoration: none;
+     
+    }
+    a:focus-visible{
+      outline: 3px solid #333;
+      outline-offset: 3px;
+    }
+  </style>
+  </head>
+  <body>
+    <main>
+        <h1>
+            You're Offline</h1>
+            <p>Task Manager can't reach the network right now. Some features may be unavailable.</p>
+            <p>Check your connection. Then try opening the app again.</p>
+            <a href="index.html">Try Task Manager again.</a>
+    </main>
+  </body>
+  </html>

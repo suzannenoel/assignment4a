@@ -1,15 +1,21 @@
 // Name of new service worker cache
-const CACHE_NAME = 'task-manager-v4';
+const CACHE_NAME = 'task-manager-v5';
 
 // Files to save for offline use
 const FILES_TO_CACHE = [
   'index.html',
+  'offline.html',
   'manifest.json',
+  'pages/about.html',
+  'pages/contact.html',
+  'css/CSS/materialize.min.css',
+  'css/custom.css',
+  'js/materialize.min.js',
   'js/ui.js',
   'js/firebaseDB.js',
   'css/img/img/task.png',
-  'css/img/img/garden.png',
-  'css/img/img/office.png'
+  'css/img/img/icons/icon-192x192.png',
+  'css/img/img/icons/icon-512x512.png'
 ];
 
 // Install - save files to cache
@@ -34,11 +40,56 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch - serve from cache when offline
+// Fetch - add new fetch handler
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
+  if(event.request.method !== 'GET'){
+    return;
+  }
+  const requestURL = new URL(event.request.url);
+  const cacheableExternalOrigins = [
+    'https://unpkg.com',
+    'https://www.gstatic.com',
+    'https://fonts.googleapis.com',
+    'https://fonts.gstatic.com',
+  ];
+  if(
+    requestURL.origin !== self.location.origin &&
+    !cacheableExternalOrigins.includes(requestURL.origin)
+  ){
+    return;
+  }
+  if (event.request.mode ==='navigate') {
+    event.respondWith(
+      fetch(event.request).catch(async () =>{
+        const cachedPage = await caches.match(event.request);
+        return cachedPage || caches.match('offline.html');
+      })
+    );
+    return;
+  }
+    event.respondWith(
+    caches.match(event.request).then(async (cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      const networkResponse = await fetch(event.request);
+
+      if (networkResponse.ok || networkResponse.type === 'opaque') {
+        try {
+          const cache = await caches.open(CACHE_NAME);
+          await cache.put(event.request, networkResponse.clone());
+        } catch (error) {
+          console.warn(
+            'Service Worker: Could not cache resource:',
+            event.request.url,
+            error
+          );
+        }
+      }
+
+      return networkResponse;
     })
   );
 });
+

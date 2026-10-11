@@ -15,7 +15,14 @@ Update the README to describe the PWA features.
 ## Midterm progress
 - [x] Create and verify the midterm branch workspace
 - [x] Complete the manifest requirements
-- [ ] Complete service-worker registration and caching
-- [ ] Add offline support
-- [ ] Update the README
-- [ ] Test required features in the browser and console
+- [x] Complete service-worker registration and caching
+- [x] Add offline support
+- [x] Update the README
+- [x] Test required features in the browser and console
+
+## Browser verification
+- Online: the app loaded as expected, the service worker registered, and the task list appeared.
+- Offline: the cached app showed the three existing tasks; the About and Contact pages also loaded.
+- Fallback: an uncached test URL showed 'offline.html'; its link returned to the cached app and tasks.
+- Console: the 'ibd' error no longer showed. Live Server and Firebase Analytics requests failed under  simulated offline mode; Firebase also showed a persistence deprecation warning.
+- Screenshots of the offline tests are saved in the OpenOffice evidenceofworkingappoffline document.
