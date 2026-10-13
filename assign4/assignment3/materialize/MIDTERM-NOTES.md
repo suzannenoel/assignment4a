@@ -21,8 +21,12 @@ Update the README to describe the PWA features.
 - [x] Test required features in the browser and console
 
 ## Browser verification
-- Online: the app loaded as expected, the service worker registered, and the task list appeared.
-- Offline: the cached app showed the three existing tasks; the About and Contact pages also loaded.
-- Fallback: an uncached test URL showed 'offline.html'; its link returned to the cached app and tasks.
-- Console: the 'ibd' error no longer showed. Live Server and Firebase Analytics requests failed under  simulated offline mode; Firebase also showed a persistence deprecation warning.
+- Online local test: the app loaded with four existing tasks, and 'sw.js' acitvated.
+- First offline reload: the app shell loaded, but the task list was blank; the Console showed
+failed requests for 'unpkg.com/ibd?module'and Google Fonts.
+- After one normal online reload with the active service worker, 'task-manager-v5' contained the external dependancies, including 'ibd' and Firebase modules.
+- Offline retest (Offline checked; Bypass unchecked): all four tasks, About and Contact loaded. An uncached URL showed 'offline.html'; its return button restored the task list.
+- - Online task add/delete were tested on the Prototype on Oct 3; and I also added, described, and deleted a task on an Android OnePlus phone. These actions were not rerun online on the midterm branch; cross-device sync was not confirmed.
+- Midterm local offline test ('127.0.0.1:5500'; DevTools Offline; 'navigator.onLine' was 'false'): added and deleted a temporary task before restoring the network.
+- Editing existing tasks and automatic sync of offline task changes were not tested.; this verification was local at '127.0.0.1:5500'.
 - Screenshots of the offline tests are saved in the OpenOffice evidenceofworkingappoffline document.
