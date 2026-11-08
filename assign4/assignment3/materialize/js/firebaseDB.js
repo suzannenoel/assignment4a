@@ -2,7 +2,7 @@
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-analytics.js";
-  import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc, updateDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+  import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, updateDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
   // TODO: Add SDKs for Firebase products that you want to use
   // https://firebase.google.com/docs/web/setup#available-libraries
@@ -33,11 +33,27 @@ enableIndexedDbPersistence(db).catch((err) => {
   //Add a task
   export async function addTask(task){
     try{
-     const docRef= await addDoc(collection(db, "tasks-firebase-indexeddb"),task);
-     return {id: docRef.id, ...task}
+     let taskId = task.id;
+     if (!taskId) {
+      taskId= crypto.randomUUID();
+     }
+     const taskData = {
+      title: task.title,
+      description: task.description,
+      status: task.status
+     };
+     const taskRef = doc(db, "tasks-firebase-indexeddb", taskId);
+     await setDoc(taskRef, taskData);
+     return {
+      id: taskId,
+      title: taskData.title,
+      description: taskData.description,
+      status: taskData.status,
+     };
 
     }  catch(error) {
         console.error("error adding task: ", error);
+        throw error;
     } 
     }
 
