@@ -2,10 +2,11 @@ import { openDB } from "https://unpkg.com/idb?module";
 import {
   addTask as addTaskToFirebase,
   getTasks as getTasksFromFirebase,
-  deleteTask as deleteTaskFromFirebase
+  deleteTask as deleteTaskFromFirebase,
+  updateTask as updateTaskInFirebase
 } from "./firebaseDB.js";
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
   const menus = document.querySelector(".sidenav");
   M.Sidenav.init(menus, { edge: "right" });
 
@@ -39,9 +40,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  loadTasks();
-  syncTasks();
+  await syncTasks();
+  await loadTasks();
   checkStorageUsage();
+});
+window.addEventListener("online", async() => {
+  await syncTasks();
+  await loadTasks();
 });
 
 async function createDB() {
@@ -59,17 +64,17 @@ async function createDB() {
 
 async function addTask(task) {
   const db = await createDB();
-  let taskId;
+  let taskId = crypto.randomUUID();
 
   if (navigator.onLine) {
-    const saveTask = await addTaskToFirebase(task);
+    const saveTask = await addTaskToFirebase({ ...task, id: taskId});
     taskId = saveTask.id;
     const tx = db.transaction("tasks", "readwrite");
     const store = tx.objectStore("tasks");
     await store.put({ ...task, id: taskId, synced: true });
     await tx.done;
   } else {
-    taskId = `temp-${Date.now()}`;
+    
     const taskToStore = { ...task, id: taskId, synced: false };
     const tx = db.transaction("tasks", "readwrite");
     const store = tx.objectStore("tasks");
@@ -89,8 +94,9 @@ async function editTask(id, updatedData) {
   const db = await createDB();
   const tx = db.transaction("tasks", "readwrite");
   const store = tx.objectStore("tasks");
-  await store.put({ ...updatedData, id: id, synced: navigator.onLine });
+  await store.put({ ...updatedData, id: id, synced: false });
   await tx.done;
+  if (navigator.onLine) await syncTasks();
 }
 
 async function syncTasks() {
@@ -100,10 +106,12 @@ async function syncTasks() {
   const tasks = await store.getAll();
   await tx.done;
 
+
   for (const task of tasks) {
     if (!task.synced && navigator.onLine) {
       try {
         const taskToSync = {
+          id: task.id,
           title: task.title,
           description: task.description,
           status: task.status,
@@ -111,7 +119,7 @@ async function syncTasks() {
         const savedTask = await addTaskToFirebase(taskToSync);
         const txUpdate = db.transaction("tasks", "readwrite");
         const storeUpdate = txUpdate.objectStore("tasks");
-        await storeUpdate.delete(task.id);
+        
         await storeUpdate.put({ ...task, id: savedTask.id, synced: true });
         await txUpdate.done;
       } catch (error) {
