@@ -33,7 +33,7 @@ enableIndexedDbPersistence(db).catch((err) => {
   //Add a task
   export async function addTask(task){
     try{
-     const docRef= await addDoc(collection(db, "tasks"),task);
+     const docRef= await addDoc(collection(db, "tasks-firebase-indexeddb"),task);
      return {id: docRef.id, ...task}
 
     }  catch(error) {
@@ -46,7 +46,7 @@ enableIndexedDbPersistence(db).catch((err) => {
   export async function getTasks(params){
    const tasks = [];
    try{
-const querySnapshot = await getDocs(collection(db,"tasks"));
+const querySnapshot = await getDocs(collection(db,"tasks-firebase-indexeddb"));
 querySnapshot.forEach((doc)=>{
 tasks.push({id: doc.id, ...doc.data()});
 })
@@ -58,7 +58,7 @@ tasks.push({id: doc.id, ...doc.data()});
   //delete tasks
   export async function deleteTask(id){
    try{
-    await deleteDoc(doc(db, "tasks",id));
+    await deleteDoc(doc(db, "tasks-firebase-indexeddb",id));
    }catch(error){
     console.error("error deleting task: ",error);
    }
@@ -66,7 +66,7 @@ tasks.push({id: doc.id, ...doc.data()});
   //update tasks
   export async function updateTask(id, updateData){
     try{
-     const taskRef= doc(db, "tasks",id);
+     const taskRef= doc(db, "tasks-firebase-indexeddb",id);
      await updateDoc(taskRef, updateData);   
     }catch(error){
         console.error("error updating task: ",error);

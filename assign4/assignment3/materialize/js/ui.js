@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 async function createDB() {
-  const db = await openDB("taskManager", 1, {
+  const db = await openDB("taskManagerFirebaseIndexedDB", 1, {
     upgrade(db) {
       const store = db.createObjectStore("tasks", {
         keyPath: "id",
