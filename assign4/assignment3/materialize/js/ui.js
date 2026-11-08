@@ -110,6 +110,11 @@ async function syncTasks() {
   for (const task of tasks) {
     if (!task.synced && navigator.onLine) {
       try {
+        if (task.deleted) {
+          await deleteTaskFromFirebase(task.id);
+          await db.delete("tasks", task.id);
+          continue;
+        }
         const taskToSync = {
           id: task.id,
           title: task.title,
@@ -143,7 +148,8 @@ async function deleteTask(id) {
   const tx = db.transaction("tasks", "readwrite");
   const store = tx.objectStore("tasks");
   try {
-    await store.delete(id);
+    if (navigator.onLine) await store.delete(id);
+    else await store.put({id, deleted: true, synced: false});
   } catch (e) {
     console.error("Error deleting the task from IndexedDB:", e);
   }
@@ -177,7 +183,7 @@ async function loadTasks() {
     const tasks = await store.getAll();
     await tx.done;
     tasks.forEach((task) => {
-      displayTask(task);
+      if(!task.deleted) displayTask(task);
     });
   }
 }

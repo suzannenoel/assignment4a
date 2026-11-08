@@ -77,6 +77,7 @@ tasks.push({id: doc.id, ...doc.data()});
     await deleteDoc(doc(db, "tasks-firebase-indexeddb",id));
    }catch(error){
     console.error("error deleting task: ",error);
+    throw error;
    }
   }
   //update tasks
