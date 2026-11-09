@@ -103,7 +103,8 @@ async function editTask(id, updatedData) {
   await tx.done;
   if (navigator.onLine) await syncTasks();
 }
-
+//Send pending local changes to Firebase using same task IDs
+//Keep the failed changes pending so synchronization can be retried
 async function syncTasks() {
   let allSynced = true;
   const db = await createDB();
@@ -156,6 +157,7 @@ async function deleteTask(id) {
   const tx = db.transaction("tasks", "readwrite");
   const store = tx.objectStore("tasks");
   try {
+    //Keep a deletion marker offline so Firebase can remove the task after reconnecting.
     if (navigator.onLine) await store.delete(id);
     else await store.put({id, deleted: true, synced: false});
   } catch (e) {
