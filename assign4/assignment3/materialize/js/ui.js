@@ -183,8 +183,23 @@ async function loadTasks() {
     const tx = db.transaction("tasks", "readwrite");
     const store = tx.objectStore("tasks");
     for (const task of firebaseTasks) {
+      //Keep pending local changes instead of replacing them with Firebase data
+      const localTask = await store.get(task.id);
+      if (localTask && !localTask.synced) {
+        if(!localTask.deleted) displayTask(localTask);
+        continue;
+      }
       await store.put({ ...task, synced: true });
       displayTask(task);
+    }
+    //Show pending local tasks that are not in Firebase yet
+    const firebaseIds = new Set(firebaseTasks.map(task => task.id));
+    const localTasks = await store.getAll();
+    for (const localTask of localTasks) {
+      if(!localTask.synced && !localTask.deleted &&
+        !firebaseIds.has(localTask.id)) {
+          displayTask(localTask);
+      }
     }
     await tx.done;
   } else {
