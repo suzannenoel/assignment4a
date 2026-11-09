@@ -45,8 +45,13 @@ document.addEventListener("DOMContentLoaded", async function () {
   checkStorageUsage();
 });
 window.addEventListener("online", async() => {
-  await syncTasks();
+  const allSynced = await syncTasks();
   await loadTasks();
+  if (allSynced) {
+    M.toast({html: "You are back online. Changes synced.", displayLength: 6000 });
+  } else {
+    M.toast({html: "Some changes could not sync. Please try again.", displayLength: 6000});
+  }
 });
 
 async function createDB() {
@@ -100,6 +105,7 @@ async function editTask(id, updatedData) {
 }
 
 async function syncTasks() {
+  let allSynced = true;
   const db = await createDB();
   const tx = db.transaction("tasks", "readonly");
   const store = tx.objectStore("tasks");
@@ -128,10 +134,12 @@ async function syncTasks() {
         await storeUpdate.put({ ...task, id: savedTask.id, synced: true });
         await txUpdate.done;
       } catch (error) {
+        allSynced = false;
         console.error("Error syncing task: ", error);
       }
     }
   }
+  return allSynced;
 }
 
 async function deleteTask(id) {
@@ -261,4 +269,5 @@ async function checkStorageUsage() {
       }
     }
   }
-}
+} 
+window.addEventListener("offline", () => M.toast({ html: "You are offline. Changes will be saved on this device.", displayLength: 6000}));
