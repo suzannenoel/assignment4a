@@ -64,6 +64,16 @@ Use the same browser and local address while applying these tests.
 
 Record the browser, device and results when completing these tests.
 
+### Testing results
+
+- I tested offline reloads in both Chrome and Edge, and the saved tasks appeared.
+- In Edge, I closed and reopened the browser then I checked that the tasks still appeared after an offline reload.
+- I created and edited a temporary task offline, reloaded the page, and confirmed the changes reached Firebase after reconnecting. I also confirmed that an offline deletion synced to Firebase.
+- I checked the mobile layouts using an IPhone SE and Pixel 9 Pro presets in Chrome DevTools. The task cards, text, delete button, and add button fit the screen.
+- I opened the app on a Samsung phone over the same Wi-Fi and confirmed that all three tasks appeared. This was an online viewing test, not an offline or syncing
+test.
+- I temporarily simulated database-opening failures and confirmed that helpful save and delete error messages appeared. After reloading, I deleted the temporary task test normally and confirmed that only the three original tasks remained in the app and Firebase.
+
 ## Known limitations
 
   - The app needs an internet connection on your first visit
