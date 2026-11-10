@@ -42,38 +42,75 @@ document.addEventListener("DOMContentLoaded", async function () {
       const instance = M.Sidenav.getInstance(forms);
       instance.close();
 
-      loadTasks();
+      try {
+        await loadTasks();
+      } catch (error) {
+        console.error("Error refreshing task list:", error);
+        M.toast({
+          html: "Your task was saved, but the list could not refresh. Please reload and try again.",
+          displayLength: 6000
     });
   }
-
-  await syncTasks();
-  await loadTasks();
-  checkStorageUsage();
 });
-window.addEventListener("online", async() => {
+}
+
+  try {
   const allSynced = await syncTasks();
   await loadTasks();
-  if (allSynced) {
-    M.toast({html: "You are back online. Changes synced.", displayLength: 6000 });
-  } else {
-    M.toast({html: "Some changes could not sync. Please try again.", displayLength: 6000});
-  }
-});
 
+  if (!allSynced) {
+    M.toast({
+      html: "Some changes could not sync. Please try again.",
+      displayLength: 6000
+    });
+  }
+} catch (error) {
+  console.error("Error opening task manager:", error);
+  M.toast({
+    html: "Could not  load your tasks. Please reload and try again.",
+    displayLength: 6000
+  });
+}
+checkStorageUsage();
+});
+window.addEventListener("online", async() => {
+  try {
+  const allSynced = await syncTasks();
+      await loadTasks();
+     
+  if (allSynced) {
+    M.toast({
+      html: "You are back online. Changes synced.",
+      displayLength: 6000
+    });
+  } else {
+    M.toast({
+      html: "Some changes could not sync. Please try again.",
+      displayLength: 6000
+    });
+  }
+  } catch (error) {
+    console.error("Error reconnecting:", error);
+    M.toast({
+    html: "Could not finish reconnecting. Please reload and try again.",
+    displayLength: 6000
+  });
+  }
+});//End of the online handler
 async function createDB() {
-  const db = await openDB("taskManagerFirebaseIndexedDB", 1, {
-    upgrade(db) {
+  const db = await openDB("taskManagerFirebaseIndexedDB",1, {
+    upgrade (db) {
       const store = db.createObjectStore("tasks", {
         keyPath: "id",
         autoIncrement: true,
       });
       store.createIndex("status", "status");
-    },
-  });
-  return db;
-}
-
-async function addTask(task) {
+     },
+   });
+   return db;
+  }
+ 
+ async function addTask(task) { 
   const db = await createDB();
   let taskId = crypto.randomUUID();
 
@@ -107,7 +144,16 @@ async function editTask(id, updatedData) {
   const store = tx.objectStore("tasks");
   await store.put({ ...updatedData, id: id, synced: false });
   await tx.done;
-  if (navigator.onLine) await syncTasks();
+  if (navigator.onLine) {
+    const allSynced = await syncTasks();
+
+    if (!allSynced) {
+      M.toast({
+        html: "Your edit was saved on this device, but could not sync. Please try again.",
+        displayLength: 6000
+    });
+    }
+}
 }
 //Send pending local changes to Firebase using same task IDs
 //Keep the failed changes pending so synchronization can be retried

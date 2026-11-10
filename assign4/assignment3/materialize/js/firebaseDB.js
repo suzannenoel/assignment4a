@@ -68,6 +68,7 @@ tasks.push({id: doc.id, ...doc.data()});
 })
    }catch(error){
     console.error("error retrieving task: ",error);
+    throw error;
    }
    return tasks;
   }
