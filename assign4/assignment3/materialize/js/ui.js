@@ -22,10 +22,16 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       if (!title) return;
 
-      if (taskId) {
+      try {
+        if (taskId) {
         await editTask(taskId, { title, description, status: "pending" });
       } else {
         await addTask({ title, description, status: "pending" });
+      }
+      } catch (error) {
+      console.error("Error saving task: ", error);
+      M.toast({ html: "Could not save the task. Please try again.", displayLength: 6000 });
+       return;
       }
 
       document.querySelector("#title").value = "";
@@ -236,7 +242,12 @@ function displayTask(task) {
   const deleteBtn = taskCard.querySelector(".task-delete");
   deleteBtn.addEventListener("click", async (e) => {
     e.stopPropagation();
-    await deleteTask(task.id);
+    try {
+      await deleteTask(task.id);
+    } catch(error){
+      console.error("Error deleting task: ", error);
+      M.toast({ html: "Could not delete the task. Please try again.", displayLength: 6000 });
+    }
   });
 
   taskCard.addEventListener("click", (e) => {
