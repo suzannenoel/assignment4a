@@ -64,4 +64,21 @@
 - No final app-code or Firebase-setting changes have been made.
 - Next: Confirm the separate Firebase project plan before setup.
 
+## Firebase setup completed
+- Project: Task Manager Final
+- Project ID: task-manager-final-5a9f6
+- Spark plan; no billing upgrade.
+- Web app registered.
+- Email/Password enabled; email-link sign-in disabled.
+- Firestore: Standard edition, (default), nam5 (United States).
+- Starting rules deny all app reads and writes.
+- Scheduled backups not enabled.
+- localhost is listed under authorized domains.
+- Existing Firebase project left unchanged.
+- App not connected to the new project yet.
+- Next: connect the final branch and implement authentication
+  and user-specific data protection in small, tested steps.
+
+
+
 
