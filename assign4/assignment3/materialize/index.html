@@ -41,6 +41,49 @@
     </aside>
 
     <main>
+      <section id="auth-section" class="container" hidden>
+        <h2 id="auth-heading">Sign in to Task Manager</h2>
+        <form id="sign-in-form">
+          <div class="input-field">
+            <input id="sign-in-email" name="email" type="email" autocomplete="username"
+            required>
+            <label for="sign-in-email">Email</label>
+          </div>
+          <div class="input-field">
+            <input id="sign-in-password" name="password" type="password"
+            autocomplete="current-password" required>
+            <label for="sign-in-password">Password</label>
+          </div>
+          <button type="submit" class="btn orange darken-2 black-text" disabled>Sign
+            in</button>
+            <button type="button" id="show-sign-up" class="btn-flat">
+              Create an account
+            </button>
+        </form>
+        <p id="sign-in-message" role="status"></p>
+        <form id="sign-up-form" hidden>
+          <div class="input-field">
+            <input id="sign-up-email" name="email" type="email"
+            autocomplete="username" required>
+            <label for="sign-up-email">Email</label>
+          </div>
+          <div class="input-field">
+            <input id="sign-up-password" name="password" type="password"
+            autocomplete="new-password" required>
+            <label for="sign-up-password">Password</label>
+          </div>
+          <button type="submit" class="btn orange darken-2 black-text"
+          disabled>Create account</button>
+          <button type="button" id="show-sign-in" class="btn-flat">
+            Back to sign in
+          </button>
+        </form>
+        <p id="sign-up-message" role="status"></p>
+      </section>
+      <div id="user-controls" class="container" hidden>
+        <button type="button" id="sign-out-button"
+        class="btn orange darken-2 black-text" disabled>Sign out</button>
+      </div>
         <!-- Tasks will be loaded here by ui.js -->
         <div class="tasks container grey-text text-darken-1"></div>
 

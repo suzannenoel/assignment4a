@@ -7,6 +7,19 @@ import {
 } from "./firebaseDB.js";
 
 document.addEventListener("DOMContentLoaded", async function () {
+  const signInForm= document.querySelector("#sign-in-form");
+  const signUpForm= document.querySelector("#sign-up-form");
+  document.querySelector("#show-sign-up").addEventListener("click", () => {
+    signInForm.hidden = true;
+    signUpForm.hidden = false;
+    document.querySelector("#auth-heading").textContent = "Create an account";
+  });
+  document.querySelector("#show-sign-in").addEventListener("click", () => {
+    signUpForm.hidden = true;
+    signInForm.hidden = false;
+    document.querySelector("#auth-heading").textContent = "Sign in to Task Manager";
+  });
+
   const menus = document.querySelector(".sidenav");
   M.Sidenav.init(menus, { edge: "right" });
 
