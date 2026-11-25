@@ -11,6 +11,8 @@ import {
 } from "./firebaseDB.js";
 let currentUser = null;
 let authSession = 0;
+let authBusy = false;
+let creatingAccount = false;
 function checkAuthSession(session) {
   if (!currentUser || session !== authSession) {
     throw new Error("Your session changed. Please try again.");
@@ -19,6 +21,11 @@ function checkAuthSession(session) {
 document.addEventListener("DOMContentLoaded", async function () {
   const signInForm= document.querySelector("#sign-in-form");
   const signUpForm= document.querySelector("#sign-up-form");
+  function setAuthButtonsDisabled(disabled) {
+    document.querySelectorAll("#auth-section button, #sign-out-button").forEach((button) =>{
+        button.disabled = disabled;
+      });
+  }
   document.querySelector("#show-sign-up").addEventListener("click", () => {
     signInForm.hidden = true;
     signUpForm.hidden = false;
@@ -29,12 +36,93 @@ document.addEventListener("DOMContentLoaded", async function () {
     signInForm.hidden = false;
     document.querySelector("#auth-heading").textContent = "Sign in to Task Manager";
   });
-watchAuthState((user) => {
+  signInForm.addEventListener("submit", async(event)  => {
+    event.preventDefault();
+    if (authBusy) return;
+    authBusy = true;
+    setAuthButtonsDisabled(true);
+    const email = signInForm.elements.email.value.trim();
+    const password = signInForm.elements.password.value;
+    try {
+      document.querySelector("#sign-in-message").textContent = "";
+      await signInUser(email, password);
+    } catch (error) {
+      document.querySelector("#sign-in-message").textContent =
+      "Could not sign in. Check your email and password and try again.";
+    } finally {
+      authBusy = false;
+      setAuthButtonsDisabled(false);
+    }
+  });
+  signUpForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (authBusy) return;
+    authBusy = true;
+    setAuthButtonsDisabled(true);
+    creatingAccount = true;
+    const email = signUpForm.elements.email.value.trim();
+    const password = signUpForm.elements.password.value;
+    try {
+      document.querySelector("#sign-up-message").textContent = "";
+      await signUpUser(email, password);
+      signUpForm.hidden = true;
+      signInForm.hidden = false;
+      document.querySelector("#auth-heading").textContent = "Sign in to Task Manager";
+      document.querySelector("#sign-in-message").textContent =
+      "Account created. Please sign in.";
+    } catch (error) {
+      document.querySelector("#sign-up-message").textContent =
+      "Could not create an account. Please check your information and try again.";
+    } finally {
+      creatingAccount = false;
+      authBusy = false;
+      setAuthButtonsDisabled(false);
+    }
+  });
+  document.querySelector("#sign-out-button").addEventListener("click", async () => {
+    if (authBusy || !currentUser) return;
+    authBusy = true;
+    setAuthButtonsDisabled(true);
+    try {
+      await signOutUser();
+    
+  } catch (error) {
+    M.toast({ html: "Could not sign out. Please try again.", displayLength: 6000 });
+  } finally {
+    authBusy = false;
+    setAuthButtonsDisabled(false);
+  }  
+  });
+  watchAuthState(async(user) => {
+    if (creatingAccount && user) return;
   authSession += 1;
   currentUser = user;
+  setAuthButtonsDisabled(authBusy);
+  signInForm.reset();
+  signUpForm.reset();
+  document.querySelector(".add-task").reset();
+  document.querySelector("#form-action-button").textContent = "Add";
+  M.Sidenav.getInstance(document.querySelector(".side-form"))?.close();
   document.querySelector(".tasks").innerHTML = "";
   document.querySelector("#auth-section").hidden = !!user;
   document.querySelector("#user-controls").hidden = !user;
+  document.querySelector(".fixed-action-btn").hidden = !user;
+  if (!user) return;
+  const session = authSession;
+  try {
+    if (navigator.onLine) {
+      await syncTasks();
+      checkAuthSession(session);
+    }
+    await loadTasks();
+    checkAuthSession(session);
+  } catch (error) {
+    if (session !== authSession || !currentUser) return;
+    console.error("Could not load your tasks:", error);
+    M.toast({ html: "Could not load your tasks. Please try again.", displayLength:
+      6000
+    });
+  }
 });
   const menus = document.querySelector(".sidenav");
   M.Sidenav.init(menus, { edge: "right" });
@@ -144,7 +232,7 @@ async function createDB() {
   let taskId = crypto.randomUUID();
 
   if (navigator.onLine) {
-    const saveTask = await addTaskToFirebase({ ...task, id: taskId});
+    const saveTask = await addTaskToFirebase({ ...task, id: taskId}, currentUser.uid);
     checkAuthSession(session);
     taskId = saveTask.id;
     const tx = db.transaction("tasks", "readwrite");
@@ -213,7 +301,8 @@ async function syncTasks() {
     if (!task.synced && navigator.onLine) {
       try {
         if (task.deleted) {
-          await deleteTaskFromFirebase(task.id);
+          await deleteTaskFromFirebase(task.id, currentUser.uid);
+
           checkAuthSession(session);
           await db.delete("tasks", task.id);
           continue;
@@ -224,7 +313,7 @@ async function syncTasks() {
           description: task.description,
           status: task.status,
         };
-        const savedTask = await addTaskToFirebase(taskToSync);
+        const savedTask = await addTaskToFirebase(taskToSync, currentUser.uid);
         checkAuthSession(session);
         const txUpdate = db.transaction("tasks", "readwrite");
         const storeUpdate = txUpdate.objectStore("tasks");
@@ -253,7 +342,7 @@ async function deleteTask(id) {
   checkAuthSession(session);
 
   if (navigator.onLine) {
-    await deleteTaskFromFirebase(id);
+    await deleteTaskFromFirebase(id, currentUser.uid);
     checkAuthSession(session);
   }
 
@@ -288,7 +377,7 @@ async function loadTasks() {
   taskContainer.innerHTML = "";
 
   if (navigator.onLine) {
-    const firebaseTasks = await getTasksFromFirebase();
+    const firebaseTasks = await getTasksFromFirebase(currentUser.uid);
     checkAuthSession(session);
     const tx = db.transaction("tasks", "readwrite");
     const store = tx.objectStore("tasks");
