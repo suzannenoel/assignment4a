@@ -3,9 +3,13 @@ import {
   addTask as addTaskToFirebase,
   getTasks as getTasksFromFirebase,
   deleteTask as deleteTaskFromFirebase,
-  updateTask as updateTaskInFirebase
+  updateTask as updateTaskInFirebase,
+  signInUser,
+  signUpUser,
+  signOutUser,
+  watchAuthState
 } from "./firebaseDB.js";
-
+let currentUser = null;
 document.addEventListener("DOMContentLoaded", async function () {
   const signInForm= document.querySelector("#sign-in-form");
   const signUpForm= document.querySelector("#sign-up-form");
@@ -111,7 +115,10 @@ window.addEventListener("online", async() => {
   }
 });//End of the online handler
 async function createDB() {
-  const db = await openDB("taskManagerFirebaseIndexedDB",1, {
+  if (!currentUser) {
+    throw new Error("Please sign in before opening task storage.");
+  }
+  const db = await openDB(`taskManagerFinal-${currentUser.uid}`, 1, {
     upgrade (db) {
       const store = db.createObjectStore("tasks", {
         keyPath: "id",
@@ -124,6 +131,9 @@ async function createDB() {
   }
  
  async function addTask(task) { 
+  if (!currentUser) {
+    throw new error("Please sign in before adding a task.");
+  }
   const db = await createDB();
   let taskId = crypto.randomUUID();
 
@@ -148,6 +158,9 @@ async function createDB() {
 }
 
 async function editTask(id, updatedData) {
+  if (!currentUser) {
+    throw new Error("Please sign in before editing a task.");
+  }
   if (!id) {
     console.error("Invalid Id passed to editTask");
     return;
@@ -171,6 +184,9 @@ async function editTask(id, updatedData) {
 //Send pending local changes to Firebase using same task IDs
 //Keep the failed changes pending so synchronization can be retried
 async function syncTasks() {
+  if (!currentUser) {
+    return false;
+  }
   let allSynced = true;
   const db = await createDB();
   const tx = db.transaction("tasks", "readonly");
@@ -209,6 +225,9 @@ async function syncTasks() {
 }
 
 async function deleteTask(id) {
+  if (!currentUser) {
+    throw new Error("Please sign in before deleting a task.");
+  }
   if (!id) {
     console.error("Invalid Id passed to deleteTask");
     return;
@@ -239,6 +258,10 @@ async function deleteTask(id) {
 }
 
 async function loadTasks() {
+  if (!currentUser) {
+    document.querySelector(".tasks").innerHTML = "";
+    return;
+  }
   const db = await createDB();
   const taskContainer = document.querySelector(".tasks");
   taskContainer.innerHTML = "";

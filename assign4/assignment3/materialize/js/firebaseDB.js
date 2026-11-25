@@ -3,7 +3,13 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-analytics.js";
   import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, updateDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
-  import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+  import { 
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+   } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
   // TODO: Add SDKs for Firebase products that you want to use
   // https://firebase.google.com/docs/web/setup#available-libraries
@@ -22,15 +28,35 @@
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
+  export const auth = getAuth(app);
   const analytics = getAnalytics(app);
   const db = getFirestore(app);
 // Enable offline support via IndexedDB
 enableIndexedDbPersistence(db).catch((err) => {
   console.warn('IndexedDB persistence failed:', err.code);
 });
+export async function signInUser(email, password) {
+  return signInWithEmailAndPassword(auth, email, password);
+}
+export async function signUpUser(email, password) {
+  const result = await createUserWithEmailAndPassword(auth, email, password);
+  await signOut(auth);
+  return result;
+}
+export async function signOutUser() {
+  return signOut(auth);
+}
+export function watchAuthState(callback) {
+  return onAuthStateChanged(auth, callback);
+}
+function getUserTasksCollection() {
+  const user = auth.currentUser;
 
-
-
+  if (!user) {
+    throw new Error("Please sign in before accessing tasks.");
+  }
+  return collection(db, "users", user.uid, "tasks");
+}
   //Add a task
   export async function addTask(task){
     try{
@@ -43,7 +69,7 @@ enableIndexedDbPersistence(db).catch((err) => {
       description: task.description,
       status: task.status
      };
-     const taskRef = doc(db, "tasks-firebase-indexeddb", taskId);
+     const taskRef = doc(getUserTasksCollection(), taskId);
      await setDoc(taskRef, taskData);
      return {
       id: taskId,
@@ -63,7 +89,7 @@ enableIndexedDbPersistence(db).catch((err) => {
   export async function getTasks(params){
    const tasks = [];
    try{
-const querySnapshot = await getDocs(collection(db,"tasks-firebase-indexeddb"));
+const querySnapshot = await getDocs(getUserTasksCollection());
 querySnapshot.forEach((doc)=>{
 tasks.push({id: doc.id, ...doc.data()});
 })
@@ -76,7 +102,7 @@ tasks.push({id: doc.id, ...doc.data()});
   //delete tasks
   export async function deleteTask(id){
    try{
-    await deleteDoc(doc(db, "tasks-firebase-indexeddb",id));
+    await deleteDoc(doc(getUserTasksCollection(), id));
    }catch(error){
     console.error("error deleting task: ",error);
     throw error;
@@ -85,9 +111,10 @@ tasks.push({id: doc.id, ...doc.data()});
   //update tasks
   export async function updateTask(id, updateData){
     try{
-     const taskRef= doc(db, "tasks-firebase-indexeddb",id);
+     const taskRef= doc(getUserTasksCollection(), id);
      await updateDoc(taskRef, updateData);   
     }catch(error){
         console.error("error updating task: ",error);
+        throw error;
        }   
     }
