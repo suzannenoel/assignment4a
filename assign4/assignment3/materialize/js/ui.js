@@ -10,6 +10,12 @@ import {
   watchAuthState
 } from "./firebaseDB.js";
 let currentUser = null;
+let authSession = 0;
+function checkAuthSession(session) {
+  if (!currentUser || session !== authSession) {
+    throw new Error("Your session changed. Please try again.");
+  }
+}
 document.addEventListener("DOMContentLoaded", async function () {
   const signInForm= document.querySelector("#sign-in-form");
   const signUpForm= document.querySelector("#sign-up-form");
@@ -23,7 +29,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     signInForm.hidden = false;
     document.querySelector("#auth-heading").textContent = "Sign in to Task Manager";
   });
-
+watchAuthState((user) => {
+  authSession += 1;
+  currentUser = user;
+  document.querySelector(".tasks").innerHTML = "";
+  document.querySelector("#auth-section").hidden = !!user;
+  document.querySelector("#user-controls").hidden = !user;
+});
   const menus = document.querySelector(".sidenav");
   M.Sidenav.init(menus, { edge: "right" });
 
@@ -38,6 +50,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       const description = document.querySelector("#description").value;
 
       if (!title) return;
+      const session = authSession;
 
       try {
         if (taskId) {
@@ -45,6 +58,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       } else {
         await addTask({ title, description, status: "pending" });
       }
+      checkAuthSession(session);
       } catch (error) {
       console.error("Error saving task: ", error);
       M.toast({ html: "Could not save the task. Please try again.", displayLength: 6000 });
@@ -71,29 +85,19 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 }
 
-  try {
-  const allSynced = await syncTasks();
-  await loadTasks();
 
-  if (!allSynced) {
-    M.toast({
-      html: "Some changes could not sync. Please try again.",
-      displayLength: 6000
-    });
-  }
-} catch (error) {
-  console.error("Error opening task manager:", error);
-  M.toast({
-    html: "Could not  load your tasks. Please reload and try again.",
-    displayLength: 6000
-  });
-}
 checkStorageUsage();
 });
 window.addEventListener("online", async() => {
+  if (!currentUser) {
+    return;
+  }
+  const session = authSession;
   try {
   const allSynced = await syncTasks();
+  checkAuthSession(session);
       await loadTasks();
+      checkAuthSession(session);
      
   if (allSynced) {
     M.toast({
@@ -132,13 +136,16 @@ async function createDB() {
  
  async function addTask(task) { 
   if (!currentUser) {
-    throw new error("Please sign in before adding a task.");
+    throw new Error("Please sign in before adding a task.");
   }
+  const session = authSession;
   const db = await createDB();
+  checkAuthSession(session);
   let taskId = crypto.randomUUID();
 
   if (navigator.onLine) {
     const saveTask = await addTaskToFirebase({ ...task, id: taskId});
+    checkAuthSession(session);
     taskId = saveTask.id;
     const tx = db.transaction("tasks", "readwrite");
     const store = tx.objectStore("tasks");
@@ -152,7 +159,7 @@ async function createDB() {
     await store.add(taskToStore);
     await tx.done;
   }
-
+  checkAuthSession(session);
   checkStorageUsage();
   return { ...task, id: taskId };
 }
@@ -165,13 +172,17 @@ async function editTask(id, updatedData) {
     console.error("Invalid Id passed to editTask");
     return;
   }
+  const session = authSession;
   const db = await createDB();
+  checkAuthSession(session);
   const tx = db.transaction("tasks", "readwrite");
   const store = tx.objectStore("tasks");
   await store.put({ ...updatedData, id: id, synced: false });
   await tx.done;
+  checkAuthSession(session);
   if (navigator.onLine) {
     const allSynced = await syncTasks();
+    checkAuthSession(session);
 
     if (!allSynced) {
       M.toast({
@@ -187,8 +198,10 @@ async function syncTasks() {
   if (!currentUser) {
     return false;
   }
+  const session = authSession;
   let allSynced = true;
   const db = await createDB();
+  checkAuthSession(session);
   const tx = db.transaction("tasks", "readonly");
   const store = tx.objectStore("tasks");
   const tasks = await store.getAll();
@@ -196,10 +209,12 @@ async function syncTasks() {
 
 
   for (const task of tasks) {
+    checkAuthSession(session);
     if (!task.synced && navigator.onLine) {
       try {
         if (task.deleted) {
           await deleteTaskFromFirebase(task.id);
+          checkAuthSession(session);
           await db.delete("tasks", task.id);
           continue;
         }
@@ -210,6 +225,7 @@ async function syncTasks() {
           status: task.status,
         };
         const savedTask = await addTaskToFirebase(taskToSync);
+        checkAuthSession(session);
         const txUpdate = db.transaction("tasks", "readwrite");
         const storeUpdate = txUpdate.objectStore("tasks");
         
@@ -232,10 +248,13 @@ async function deleteTask(id) {
     console.error("Invalid Id passed to deleteTask");
     return;
   }
+  const session = authSession;
   const db = await createDB();
+  checkAuthSession(session);
 
   if (navigator.onLine) {
     await deleteTaskFromFirebase(id);
+    checkAuthSession(session);
   }
 
   const tx = db.transaction("tasks", "readwrite");
@@ -248,7 +267,7 @@ async function deleteTask(id) {
     console.error("Error deleting the task from IndexedDB:", e);
   }
   await tx.done;
-
+  checkAuthSession(session);
   const taskCard = document.querySelector(`[data-id="${id}"]`);
   if (taskCard) {
     taskCard.remove();
@@ -262,27 +281,33 @@ async function loadTasks() {
     document.querySelector(".tasks").innerHTML = "";
     return;
   }
+  const session = authSession;
   const db = await createDB();
+  checkAuthSession(session);
   const taskContainer = document.querySelector(".tasks");
   taskContainer.innerHTML = "";
 
   if (navigator.onLine) {
     const firebaseTasks = await getTasksFromFirebase();
+    checkAuthSession(session);
     const tx = db.transaction("tasks", "readwrite");
     const store = tx.objectStore("tasks");
     for (const task of firebaseTasks) {
       //Keep pending local changes instead of replacing them with Firebase data
       const localTask = await store.get(task.id);
+      checkAuthSession(session);
       if (localTask && !localTask.synced) {
         if(!localTask.deleted) displayTask(localTask);
         continue;
       }
       await store.put({ ...task, synced: true });
+      checkAuthSession(session);
       displayTask(task);
     }
     //Show pending local tasks that are not in Firebase yet
     const firebaseIds = new Set(firebaseTasks.map(task => task.id));
     const localTasks = await store.getAll();
+    checkAuthSession(session);
     for (const localTask of localTasks) {
       if(!localTask.synced && !localTask.deleted &&
         !firebaseIds.has(localTask.id)) {
@@ -295,6 +320,7 @@ async function loadTasks() {
     const store = tx.objectStore("tasks");
     const tasks = await store.getAll();
     await tx.done;
+    checkAuthSession(session);
     tasks.forEach((task) => {
       if(!task.deleted) displayTask(task);
     });

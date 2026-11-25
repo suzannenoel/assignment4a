@@ -75,10 +75,36 @@
 - Scheduled backups not enabled.
 - localhost is listed under authorized domains.
 - Existing Firebase project left unchanged.
-- App not connected to the new project yet.
+- Firebase configuration now points to Task Manager Final; authentication, wiring 
+and testing remain unfinished.
 - Next: connect the final branch and implement authentication
   and user-specific data protection in small, tested steps.
 
 
+## Chapter 11- evening checkpoint
 
+### Saved preparation
+- Added authentication helpers and the session-display listener.
+- Added signed-out checks and session-change checks around task operations.
+- Changed local task storage to a separate database for each user.
+- Switched the Firebase configuration to Task Manager Final.
+- Published per-user Firestore rules and saved a root firestore.rules file.
+- Updated all four Firestore task functions to required an expected user ID.
+- Removed unused Firebase Analylitics Initialization.
+
+### Important: authentication is unfinished
+- The ui.js calls still need to pass the expected user ID.
+- Account creation, sign-in, and sign-out buttons are not connected yet.
+- Authentication-controlled task startup and session cleanup still need finishing.
+- The latest authentication and privacy changes have not been tested.
+- Do not test account or task actions at this checkpoint.
+- Service-worker "Bypass for network" remains enabled for development.
+- The submitted firebase-indexeddb branch was left unchanged.
+
+### Resume here
+1. Update the Firebase task calls in ui.js to pass the expected user ID.
+2. Review the complete code for session-change saftey and syntax.
+3. Finish session cleanup, account actions, and authenticated task loading.
+4. Test two-user privacy, security rules, offline changes, and reconnection.
+5. Disable service-worker bypass before final cache and offline-shell testing.
 
