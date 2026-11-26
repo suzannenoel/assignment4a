@@ -426,6 +426,9 @@ function displayTask(task) {
       <div class="task-detail col s8">
         <h5 class="task-title black-text">${task.title}</h5>
         <div class="task-description">${task.description}</div>
+        <div class="task-sync-status">
+        ${task.synced === false ? "Waiting to sync" : "Synced"}
+      </div>
       </div>
       <div class="col s2 right-align">
         <button class="task-delete btn-flat" aria-label="Delete task">
