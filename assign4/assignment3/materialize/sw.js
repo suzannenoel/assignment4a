@@ -1,5 +1,5 @@
 // Name of new service worker cache
-const CACHE_NAME = 'task-manager-v11';
+const CACHE_NAME = 'task-manager-final-v1';
 
 // Files to save for offline use
 const FILES_TO_CACHE = [
@@ -32,7 +32,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keyList) => {
       return Promise.all(keyList.map((key) => {
-        if (key !== CACHE_NAME) {
+        if (key.startsWith(`task-manager-final-`) && key !== CACHE_NAME) {
           return caches.delete(key);
         }
       }));
@@ -61,14 +61,17 @@ self.addEventListener('fetch', (event) => {
   if (event.request.mode ==='navigate') {
     event.respondWith(
       fetch(event.request).catch(async () =>{
-        const cachedPage = await caches.match(event.request);
-        return cachedPage || caches.match('offline.html');
+        const cache = await caches.open(CACHE_NAME);
+        const cachedPage = await cache.match(event.request);
+        return cachedPage || cache.match('offline.html');
       })
     );
     return;
   }
     event.respondWith(
-    caches.match(event.request).then(async (cachedResponse) => {
+    caches.open(CACHE_NAME)
+    .then((cache) => cache.match(event.request))
+    .then(async (cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
