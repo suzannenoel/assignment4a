@@ -2,7 +2,7 @@
 
 This app will help users keep track of daily tasks. Users can add tasks using the plus icon, view tasks in the task list, and delete tasks using the trash icon. This app is user-friendly, and anyone can use it. Additional features will be added in the future.
 
-[Open the live Task Manager App](https://suzannenoel.github.io/assignment4a/assign4/assignment3/materialize/index.html)
+[Open the earlier Task Manager prototype](https://suzannenoel.github.io/assignment4a/assign4/assignment3/materialize/index.html)
 ## Progressive Web App (PWA)
 - 'manifest.json' provides the app metadata.
 - 'sw.js' caches the app shell and selected assets so the app can load offline.
@@ -11,7 +11,7 @@ This app will help users keep track of daily tasks. Users can add tasks using th
 
 ### Test offline locally
 1. Open 'index.html' with Live Server while still online; wait for 'sw.js' to activate.
-2. Reload once while online. In DevTools, open Application > Storage > Cache Storage > task-manager-v5; confirm it contains the app files and /idb?module.
+2. Reload once while online. In DevTools, open Application > Storage > Cache Storage > task-manager-final-v4; confirm it contains the app files and /idb?module.
 3. Check **Offline** only, leave **Bypass for network** unchecked, and reload. Confirm the tasks, About, and   Contact load.
 4. Open a nonexistent URL within the app's scope. Confirm 'offline.html' appears and its return button works.
 5. Uncheck **Offline** when finished.

@@ -67,7 +67,8 @@ account passwords, service-account private keys, or other private credentials.
 
 ## Testing checklist
 
-Use the same browser and local address while applying these tests.
+Sign in while online before starting these tests, and remain signed in during offline testing.
+Use the same browser and local address throughout.
 
 1. While online, create a task with a title and a description. Edit a task, reload the page, and check that the changes remain.
 2. Open the browser DevTools if in Chrome, and select Network>Offline. Create a task, edit a task, and delete a task.
@@ -80,8 +81,8 @@ Use the same browser and local address while applying these tests.
 
 - After syncing online, close and reopen the browser.
 - Open the app again and check that the saved tasks appear.
-- Open the app in another supported browser or on another device while still online and check
-  that it loads the tasks stored in Firebase.
+- Open the app at the same address in another supported browser or on another device while online.
+  Sign in with the same account and confirm that account's cloud tasks load.
 - Offline changes made in one browser will not appear in another device until the original 
   browser reconnects and syncs with Firebase.
 
