@@ -105,6 +105,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   document.querySelector("#form-action-button").textContent = "Add";
   M.Sidenav.getInstance(document.querySelector(".side-form"))?.close();
   document.querySelector(".tasks").innerHTML = "";
+  document.querySelector("#task-loading").hidden = true;
   document.querySelector("#auth-section").hidden = !!user;
   document.querySelector("#user-controls").hidden = !user;
   document.querySelector(".fixed-action-btn").hidden = !user;
@@ -390,6 +391,10 @@ async function loadTasks() {
     return;
   }
   const session = authSession;
+  const loadingMessage = document.querySelector("#task-loading");
+  loadingMessage.hidden = false;
+  try {
+
   const db = await createDB();
   checkAuthSession(session);
   const taskContainer = document.querySelector(".tasks");
@@ -441,6 +446,9 @@ async function loadTasks() {
     tasks.forEach((task) => {
       if(!task.deleted) displayTask(task);
     });
+  }
+  } finally {
+  if (session === authSession) loadingMessage.hidden = true;
   }
 }
 
