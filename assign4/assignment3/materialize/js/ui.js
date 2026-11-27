@@ -13,6 +13,7 @@ let currentUser = null;
 let authSession = 0;
 let authBusy = false;
 let creatingAccount = false;
+let syncQueue = Promise.resolve();
 function checkAuthSession(session) {
   if (!currentUser || session !== authSession) {
     throw new Error("Your session changed. Please try again.");
@@ -419,13 +420,13 @@ async function loadTasks() {
 function displayTask(task) {
   const taskContainer = document.querySelector(".tasks");
   const html = `
-    <div class="card-panel white row valign-wrapper" data-id="${task.id}">
+    <div class="card-panel white row valign-wrapper">
       <div class="col s2">
         <img src="css/img/img/task.png" class="circle responsive-img" alt="Task icon" style="max-width: 100%; height: auto" />
       </div>
       <div class="task-detail col s8">
-        <h5 class="task-title black-text">${task.title}</h5>
-        <div class="task-description">${task.description}</div>
+        <h5 class="task-title black-text"></h5>
+        <div class="task-description"></div>
         <div class="task-sync-status">
         ${task.synced === false ? "Waiting to sync" : "Synced"}
       </div>
@@ -438,7 +439,10 @@ function displayTask(task) {
     </div>`;
   taskContainer.insertAdjacentHTML("beforeend", html);
 
-  const taskCard = taskContainer.querySelector(`[data-id="${task.id}"]`);
+  const taskCard = taskContainer.lastElementChild;
+  taskCard.dataset.id = task.id;
+  taskCard.querySelector(".task-title").textContent = task.title;
+  taskCard.querySelector(".task-description").textContent = task.description;
   const deleteBtn = taskCard.querySelector(".task-delete");
   deleteBtn.addEventListener("click", async (e) => {
     e.stopPropagation();
