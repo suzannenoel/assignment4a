@@ -92,7 +92,7 @@ Record the browser, device and results when completing these tests.
 
 - I tested offline reloads in both Chrome and Edge, and the saved tasks appeared.
 - In Edge, I closed and reopened the browser then I checked that the tasks still appeared after an offline reload.
-- I created and edited a temporary task offline, reloaded the page, and confirmed the changes reached Firebase after reconnecting. I also confirmed that an offline    deletion synced to Firebase.
+- I created and edited a temporary task offline, reloaded the page, and confirmed the changes reached Firebase after reconnecting. I also confirmed that an offline     deletion synced to Firebase.
 - I checked the mobile layouts using an IPhone SE and Pixel 9 Pro presets in Chrome DevTools. The task cards, text, delete button, and add button fit the screen.
 - I opened the app on a Samsung phone over the same Wi-Fi and confirmed that all three tasks appeared. This was an online viewing test, not an offline or syncing
   test.
@@ -122,6 +122,10 @@ Record the browser, device and results when completing these tests.
 - Created a temporary task, in regular Chrome, deleted it in an Incognito session
   signed into the same account, and refreshed regular Chrome online then offline.
   The deleted task did not return, and the original three tasks remained.
+- In Chrome, with 3G throttling, confirmed "Loading your tasks..." appeared
+  during loading and disappeard after the tasks loaded.
+- Confirmed "How to install Task Manager" expanded to show the instructions
+  and collasped when clicked again.
 
 ## Known limitations
 
