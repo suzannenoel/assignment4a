@@ -1,5 +1,5 @@
 // Name of new service worker cache
-const CACHE_NAME = 'task-manager-final-v6';
+const CACHE_NAME = 'task-manager-final-v7';
 
 // Files to save for offline use
 const FILES_TO_CACHE = [

@@ -92,33 +92,36 @@ Record the browser, device and results when completing these tests.
 
 - I tested offline reloads in both Chrome and Edge, and the saved tasks appeared.
 - In Edge, I closed and reopened the browser then I checked that the tasks still appeared after an offline reload.
-- I created and edited a temporary task offline, reloaded the page, and confirmed the changes reached Firebase after reconnecting. I also confirmed that an offline deletion synced to Firebase.
+- I created and edited a temporary task offline, reloaded the page, and confirmed the changes reached Firebase after reconnecting. I also confirmed that an offline    deletion synced to Firebase.
 - I checked the mobile layouts using an IPhone SE and Pixel 9 Pro presets in Chrome DevTools. The task cards, text, delete button, and add button fit the screen.
 - I opened the app on a Samsung phone over the same Wi-Fi and confirmed that all three tasks appeared. This was an online viewing test, not an offline or syncing
-test.
-- I temporarily simulated database-opening failures and confirmed that helpful save and delete error messages appeared. After reloading, I deleted the temporary task test normally and confirmed that only the three original tasks remained in the app and Firebase.
+  test.
+- I temporarily simulated database-opening failures and confirmed that helpful save and delete error messages appeared. After reloading, I deleted the temporary task    test normally and confirmed that only the three original tasks remained in the app and Firebase.
 
 ### Final-project testing results
 - Created accounts, signed in and out, and confirmed signing out clears tasks from the screen.
 - Switched between two accounts in the same browser and confirmed each showed only its own tasks.
 - Confirmed account A's offline pending task stayed unsynced, while account B was signed in,
-then synced after returning to account A.
+  then synced after returning to account A.
 - Created, edited, and deleted tasks offline, then reconnected and confirmed the expected
-results remained after an online refresh.
+  results remained after an online refresh.
 - Confirmed a newly created offline task survived an offline refresh and kept the same ID
-when its local synced value changed from false to true after reconnecting.
+  when its local synced value changed from false to true after reconnecting.
 - Opened the app offline with Chrome's normal browser cache disabled and confirmed
-the task list and images loaded through the service worker.
+  the task list and images loaded through the service worker.
 - Confirmed task labels changed from "Synced" to "Waiting to sync" after an offline edit,
-then returned to "Synced" after reconnecting.
+  then returned to "Synced" after reconnecting.
 - Signed into account A in a separate Chrome Incognito session and confirmed its three
-cloud tasks loaded.
+  cloud tasks loaded.
 - Used Firestore Rules Playground to confirm signed-out reads were denied, owner reads
-and deletes were allowed, and another user's reads and deletes were denied.
+  and deletes were allowed, and another user's reads and deletes were denied.
 - Installed the PWA locally and reopened it from Windows search; all three account A
-tasks and their Synced labels appeared.
+  tasks and their Synced labels appeared.
 - Checked task-list layouts at 320px, 768px, and desktop widths, and confirmed the task
-form fit at 320px.
+  form fit at 320px.
+- Created a temporary task, in regular Chrome, deleted it in an Incognito session
+  signed into the same account, and refreshed regular Chrome online then offline.
+  The deleted task did not return, and the original three tasks remained.
 
 ## Known limitations
 

@@ -2,7 +2,7 @@
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
   
-  import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, updateDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+  import { getFirestore, collection, doc, setDoc, getDocsFromServer, deleteDoc, updateDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
   import { 
     getAuth,
     createUserWithEmailAndPassword,
@@ -82,12 +82,12 @@ function getUserTasksCollection(expectedUserId) {
     } 
     }
 
-
+   
   //get tasks
   export async function getTasks(expectedUserId){
    const tasks = [];
    try{
-const querySnapshot = await getDocs(getUserTasksCollection(expectedUserId));
+const querySnapshot = await getDocsFromServer(getUserTasksCollection(expectedUserId));
 querySnapshot.forEach((doc)=>{
 tasks.push({id: doc.id, ...doc.data()});
 })

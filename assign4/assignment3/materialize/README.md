@@ -11,7 +11,7 @@ This app will help users keep track of daily tasks. Users can add tasks using th
 
 ### Test offline locally
 1. Open 'index.html' with Live Server while still online; wait for 'sw.js' to activate.
-2. Reload once while online. In DevTools, open Application > Storage > Cache Storage > task-manager-final-v4; confirm it contains the app files and /idb?module.
+2. Reload once while online. In DevTools, open Application > Storage > Cache Storage > task-manager-final-v7; confirm it contains the app files and /idb?module.
 3. Check **Offline** only, leave **Bypass for network** unchecked, and reload. Confirm the tasks, About, and   Contact load.
 4. Open a nonexistent URL within the app's scope. Confirm 'offline.html' appears and its return button works.
 5. Uncheck **Offline** when finished.

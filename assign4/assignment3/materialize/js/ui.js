@@ -396,6 +396,10 @@ async function loadTasks() {
   taskContainer.innerHTML = "";
 
   if (navigator.onLine) {
+    const beforeFetch = new Map((await db.getAll("tasks"))
+    .map(task => [task.id, JSON.stringify(task)]));
+    checkAuthSession(session);
+
     const firebaseTasks = await getTasksFromFirebase(currentUser.uid);
     checkAuthSession(session);
     const tx = db.transaction("tasks", "readwrite");
@@ -417,9 +421,14 @@ async function loadTasks() {
     const localTasks = await store.getAll();
     checkAuthSession(session);
     for (const localTask of localTasks) {
-      if(!localTask.synced && !localTask.deleted &&
-        !firebaseIds.has(localTask.id)) {
-          displayTask(localTask);
+     if (localTask.synced && !firebaseIds.has(localTask.id) &&
+     beforeFetch.get(localTask.id) === JSON.stringify(localTask)) {
+      await store.delete(localTask.id);
+     }
+     if (!localTask.synced && !localTask.deleted &&
+      !firebaseIds.has(localTask.id)) {
+        displayTask(localTask);
+     
       }
     }
     await tx.done;
