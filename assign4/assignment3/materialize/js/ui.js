@@ -283,7 +283,17 @@ async function editTask(id, updatedData) {
 }
 //Send pending local changes to Firebase using same task IDs
 //Keep the failed changes pending so synchronization can be retried
-async function syncTasks() {
+function syncTasks() {
+  const session = authSession;
+  const nextSync = syncQueue.catch(() => false).then(() => {
+    if (!currentUser || session !== authSession) return false;
+    return runSyncTasks();
+  });
+  syncQueue = nextSync;
+  return nextSync;
+}
+
+async function runSyncTasks() {
   if (!currentUser) {
     return false;
   }
@@ -305,7 +315,17 @@ async function syncTasks() {
           await deleteTaskFromFirebase(task.id, currentUser.uid);
 
           checkAuthSession(session);
-          await db.delete("tasks", task.id);
+          const txDelete = db.transaction("tasks", "readwrite");
+          const deleteStore = txDelete.objectStore("tasks");
+          const latestDeletedTask = await deleteStore.get(task.id);
+          if (latestDeletedTask &&
+            JSON.stringify(latestDeletedTask) === JSON.stringify(task)) {
+              await deleteStore.delete(task.id);
+            } else if (latestDeletedTask && !latestDeletedTask.synced) {
+              allSynced = false;
+            }
+            await txDelete.done;
+          
           continue;
         }
         const taskToSync = {
@@ -319,7 +339,12 @@ async function syncTasks() {
         const txUpdate = db.transaction("tasks", "readwrite");
         const storeUpdate = txUpdate.objectStore("tasks");
         
-        await storeUpdate.put({ ...task, id: savedTask.id, synced: true });
+        const latestTask = await storeUpdate.get(task.id);
+        if (latestTask && JSON.stringify(latestTask) === JSON.stringify(task)) {
+         await storeUpdate.put({...latestTask, synced: true});
+        } else if(latestTask && !latestTask.synced) {
+         allSynced = false;
+        }
         await txUpdate.done;
       } catch (error) {
         allSynced = false;
@@ -335,37 +360,30 @@ async function deleteTask(id) {
     throw new Error("Please sign in before deleting a task.");
   }
   if (!id) {
-    console.error("Invalid Id passed to deleteTask");
     return;
   }
   const session = authSession;
   const db = await createDB();
   checkAuthSession(session);
-
-  if (navigator.onLine) {
-    await deleteTaskFromFirebase(id, currentUser.uid);
+    
+    await db.put("tasks", { id, deleted: true, synced: false});
     checkAuthSession(session);
-  }
+    const taskCard = document.querySelector(`[data-id="${id}"]`);
+    if (taskCard) taskCard.remove();
 
-  const tx = db.transaction("tasks", "readwrite");
-  const store = tx.objectStore("tasks");
-  try {
-    //Keep a deletion marker offline so Firebase can remove the task after reconnecting.
-    if (navigator.onLine) await store.delete(id);
-    else await store.put({id, deleted: true, synced: false});
-  } catch (e) {
-    console.error("Error deleting the task from IndexedDB:", e);
+    if (navigator.onLine) {
+      const allSynced = await syncTasks();
+      checkAuthSession(session);
+      if (!allSynced) {
+        M.toast({
+          html: "Deletion saved on this device. Sync is still pending.",
+          displayLength: 6000
+        });
+      }
+    }
+    checkStorageUsage();
   }
-  await tx.done;
-  checkAuthSession(session);
-  const taskCard = document.querySelector(`[data-id="${id}"]`);
-  if (taskCard) {
-    taskCard.remove();
-  }
-
-  checkStorageUsage();
-}
-
+ 
 async function loadTasks() {
   if (!currentUser) {
     document.querySelector(".tasks").innerHTML = "";
