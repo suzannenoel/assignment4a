@@ -19,3 +19,23 @@ header nav .sidenav-trigger,
 header nav .sidenav-trigger i {
   color: #333;
 }
+header nav .brand-logo.orange-text {
+  color: #e64a0a !important;
+}
+  .btn.orange.darken-2, 
+  .btn-floating.orange.darken-2 {
+   background-color: #e64a0a !important;
+   color: #000 !important;
+  }
+  .btn-floating.orange.darken-2 i {
+    color: #000 !important;
+  }
+  #sign-out-button {
+    font-weight: 500;
+  }
+  
+    
+    
+    
+  
+
